@@ -1,6 +1,6 @@
 # RLHF with GRPO for ECG Medical Reasoning
 
-This project implements Reinforcement Learning from Human Feedback (RLHF) using Group Relative Policy Optimization (GRPO) to fine-tune Llama-3.2-3B-Instruct on ECG medical reasoning data.
+GRPO Experiments before integrated into [ECG-Bench](https://github.com/willxxy/ECG-Bench)
 
 ## Overview
 
