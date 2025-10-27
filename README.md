@@ -53,6 +53,10 @@ cd verl
 pip install --no-deps -e .
 cd ..
 ```
+# First, login to HuggingFace (one-time)
+```bash
+huggingface-cli login
+```
 
 #### Clone Dataset
 ```bash
@@ -76,18 +80,31 @@ Run the data preparation script:
 
 #### Configure SFT Training
 
+**Training Parameters:**
+- `--model_name`: Base model (meta-llama/Llama-3.2-3B-Instruct)
+- `--num_epochs`: 1 (number of passes through the dataset)
+- `--batch_size`: 4 (samples per GPU)
+- `--gradient_accumulation_steps`: 4 (effective batch size = 16)
+- `--learning_rate`: 2e-4 (0.0002, typical for LoRA)
+- `--max_seq_length`: 2048 tokens
+- `--lora_r`: 16 (LoRA rank - controls model capacity)
+- `--lora_alpha`: 32 (LoRA scaling factor)
+
 #### Run SFT Training
+
+
+
+# Run training
+```bash
+bash scripts/sft_train.sh
+```
 
 
 ---
 
-### Phase 4: Reward Model Training
 
-#### Rule-Based Rewards
-
-#### Trained Reward Model
-
-### Phase 5: GRPO Training
+### Phase 4: GRPO Training
+https://github.com/volcengine/verl/blob/main/examples/grpo_trainer/README.md
 
 #### Configure GRPO
 
@@ -96,7 +113,7 @@ Run the data preparation script:
 
 ---
 
-### Phase 6: Evaluation & Testing
+### Phase 5: Evaluation & Testing
 
 #### Quantitative Evaluation
 
