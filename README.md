@@ -21,16 +21,17 @@ RL/
 │   ├── sft/                    # Supervised fine-tuned model
 │   └── rlhf/                   # RLHF checkpoints
 ├── scripts/
+│   ├── prepare_data.sh         # Prepare data for SFT/RL
+│   ├── sft_train.sh            #SFT (LoRA)
 │   └── chat_with_model.sh      # Quick script to chat with model
 ├── configs/                     # Training configurations
 ├── utils/                       # Helper functions
 ├── chat.py                      # Interactive chat with models
 ├── requirement.txt              # Python dependencies
 ├── README.md                    # This file
-├── prepare_data.py              # Data preprocessing (placeholder)
-├── sft_train.py                 # SFT training (placeholder)
-├── reward_model.py              # Reward model (placeholder)
-└── grpo_train.py                # GRPO training (placeholder)
+├── prepare_data.py              # Data preprocessing 
+├── sft_train.py                 # SFT training
+└── grpo_train.py                # GRPO training
 ```
 
 ## Step-by-Step Implementation Guide
@@ -42,18 +43,19 @@ RL/
 pip install -r requirements.txt
 ```
 
-Add VERL as a git submodule for version control and reproducibility
+#### Add VERL as a git submodule for version control and reproducibility
 ```bash
 git submodule add https://github.com/volcengine/verl.git verl
 git submodule update --init --recursive
 ```
-
 ```bash
 cd verl
 pip install --no-deps -e .
 cd ..
 ```
-# First, login to HuggingFace (one-time)
+
+
+#### huggingface login
 ```bash
 huggingface-cli login
 ```
@@ -71,9 +73,8 @@ git submodule update --init --recursive
 #### Preprocess Data
 Run the data preparation script:
 ```bash
-
+bash scripts/prepare_data.sh
 ```
-
 ---
 
 ### Phase 3: Supervised Fine-Tuning (SFT)
@@ -82,24 +83,18 @@ Run the data preparation script:
 
 **Training Parameters:**
 - `--model_name`: Base model (meta-llama/Llama-3.2-3B-Instruct)
-- `--num_epochs`: 1 (number of passes through the dataset)
-- `--batch_size`: 4 (samples per GPU)
-- `--gradient_accumulation_steps`: 4 (effective batch size = 16)
-- `--learning_rate`: 2e-4 (0.0002, typical for LoRA)
-- `--max_seq_length`: 2048 tokens
-- `--lora_r`: 16 (LoRA rank - controls model capacity)
-- `--lora_alpha`: 32 (LoRA scaling factor)
+- `--num_epochs`
+- `--batch_size`
+- `--gradient_accumulation_steps`
+- `--learning_rate`
+- `--max_seq_length`
+- `--lora_r`
+- `--lora_alpha`
 
 #### Run SFT Training
-
-
-
-# Run training
 ```bash
 bash scripts/sft_train.sh
 ```
-
-
 ---
 
 
