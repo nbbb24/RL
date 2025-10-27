@@ -37,9 +37,21 @@ RL/
 
 ### Phase 1: Environment Setup
 
-#### Step 1.1: Install Dependencies
+#### Install Dependencies
 ```bash
 pip install -r requirements.txt
+```
+
+Add VERL as a git submodule for version control and reproducibility
+```bash
+git submodule add https://github.com/volcengine/verl.git verl
+git submodule update --init --recursive
+```
+
+```bash
+cd verl
+pip install --no-deps -e .
+cd ..
 ```
 
 #### Clone Dataset

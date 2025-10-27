@@ -1,3 +1,6 @@
 [submodule "data/raw/ECG-Expert-QA"]
 	path = data/raw/ECG-Expert-QA
 	url = https://github.com/Zaozzz/ECG-Expert-QA
+[submodule "verl"]
+	path = verl
+	url = https://github.com/volcengine/verl.git
