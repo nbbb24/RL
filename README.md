@@ -21,11 +21,7 @@ RL/
 │   ├── sft/                    # Supervised fine-tuned model
 │   └── rlhf/                   # RLHF checkpoints
 ├── scripts/
-│   ├── chat_with_model.sh      # Quick script to chat with model
-│   ├── prepare_data.py         # Data preprocessing
-│   ├── sft_train.py            # Supervised fine-tuning
-│   ├── reward_model.py         # Reward model training
-│   └── grpo_train.py           # GRPO training
+│   └── chat_with_model.sh      # Quick script to chat with model
 ├── configs/                     # Training configurations
 ├── utils/                       # Helper functions
 ├── chat.py                      # Interactive chat with models
