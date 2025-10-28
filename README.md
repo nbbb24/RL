@@ -30,8 +30,7 @@ RL/
 ├── requirement.txt              # Python dependencies
 ├── README.md                    # This file
 ├── prepare_data.py              # Data preprocessing 
-├── sft_train.py                 # SFT training
-└── grpo_train.py                # GRPO training
+└── sft_train.py                 # SFT training
 ```
 
 ## Step-by-Step Implementation Guide
@@ -129,7 +128,15 @@ https://github.com/volcengine/verl/blob/main/examples/grpo_trainer/README.md
 
 #### reward
 
-Need to design reward function under "verl/verl/utils/reward_score"
+Need to design reward function under "verl/verl/utils/reward_score/"
+
+Also add this to "verl/verl/utils/reward_score/__init__.py"
+```python
+elif data_source == "ecg_expert_qa":
+    from . import ecg_expert_qa
+
+    res = ecg_expert_qa.compute_score(solution_str, ground_truth, method="hybrid")
+```
 
 #### Run GRPO Training
 
@@ -149,11 +156,13 @@ bash scripts/run_grpo.sh
 
 ---
 
-## Important: vLLM 0.8.4 LoRA Bug Fix
+
+
+## Issues
 
 **Issue**: vLLM 0.8.4 has a bug that prevents LoRA training with VERL (`AttributeError: 'LoRALRUCache' object has no attribute '_LRUCache__update'`)
 
-**Fix Applied**: Patched `/home/xiaoyu/anaconda3/envs/rlhf/lib/python3.10/site-packages/vllm/utils.py` lines 277-280
+**Fix Applied**: Patched `~/anaconda3/envs/rlhf/lib/python3.10/site-packages/vllm/utils.py` lines 277-280
 
 **What was changed**:
 ```python
