@@ -1,0 +1,10 @@
+{"time":"2025-10-28T05:28:26.941419909Z","level":"INFO","msg":"using version","core version":"0.18.3"}
+{"time":"2025-10-28T05:28:26.94143294Z","level":"INFO","msg":"created symlink","path":"/home/xiaoyu/RL/wandb/run-20251028_052826-co6gdldu/logs/debug-core.log"}
+{"time":"2025-10-28T05:28:26.945905547Z","level":"ERROR","msg":"dialing: google: could not find default credentials. See https://cloud.google.com/docs/authentication/external/set-up-adc for more information"}
+{"time":"2025-10-28T05:28:26.951942122Z","level":"INFO","msg":"created new stream","id":"co6gdldu"}
+{"time":"2025-10-28T05:28:26.951961832Z","level":"INFO","msg":"stream: started","id":"co6gdldu"}
+{"time":"2025-10-28T05:28:26.951985872Z","level":"INFO","msg":"handler: started","stream_id":{"value":"co6gdldu"}}
+{"time":"2025-10-28T05:28:26.951984082Z","level":"INFO","msg":"sender: started","stream_id":{"value":"co6gdldu"}}
+{"time":"2025-10-28T05:28:26.951983272Z","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"co6gdldu"}}
+{"time":"2025-10-28T05:28:27.196895298Z","level":"INFO","msg":"wandb-core","!BADKEY":null}
+{"time":"2025-10-28T05:28:27.199525326Z","level":"INFO","msg":"Starting system monitor"}

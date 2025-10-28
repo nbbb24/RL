@@ -1,0 +1,4 @@
+[console_scripts]
+ecg-chat = chat:main
+ecg-prepare-data = prepare_data:main
+ecg-sft-train = sft_train:main

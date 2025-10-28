@@ -4,6 +4,8 @@ from trl import SFTTrainer, SFTConfig
 from datasets import load_dataset
 from peft import LoraConfig
 import argparse
+import wandb
+import os
 
 
 def format_prompt(example, system_prompt, tokenizer):
@@ -20,9 +22,25 @@ def format_prompt(example, system_prompt, tokenizer):
 def main(args):
     # Set GPU device
     if args.device:
-        import os
         os.environ["CUDA_VISIBLE_DEVICES"] = args.device
         print(f"Using GPU: {args.device}")
+
+    # Initialize W&B if enabled
+    if args.use_wandb:
+        wandb.init(
+            project=args.wandb_project,
+            name=args.wandb_run_name,
+            config={
+                "model_name": args.model_name,
+                "num_epochs": args.num_epochs,
+                "batch_size": args.batch_size,
+                "learning_rate": args.learning_rate,
+                "lora_r": args.lora_r,
+                "lora_alpha": args.lora_alpha,
+                "max_seq_length": args.max_seq_length,
+            }
+        )
+        print(f"W&B initialized: {args.wandb_project}/{args.wandb_run_name}")
 
     # Load model and tokenizer
     print(f"Loading model: {args.model_name}")
@@ -74,9 +92,10 @@ def main(args):
         save_steps=500,
         save_total_limit=2,
         bf16=True,
-        report_to="none",
+        report_to="wandb" if args.use_wandb else "none",
         max_length=args.max_seq_length,
         dataset_text_field="text",
+        run_name=args.wandb_run_name if args.use_wandb else None,
     )
 
     # SFT Trainer
@@ -97,6 +116,11 @@ def main(args):
     print(f"Saving model to: {args.output_dir}")
     trainer.save_model(args.output_dir)
     tokenizer.save_pretrained(args.output_dir)
+
+    # Finish W&B run
+    if args.use_wandb:
+        wandb.finish()
+
     print("Training complete!")
 
 
@@ -117,6 +141,16 @@ if __name__ == "__main__":
     parser.add_argument("--lora_r", type=int, default=16, help="LoRA rank")
     parser.add_argument("--lora_alpha", type=int, default=32, help="LoRA alpha")
     parser.add_argument("--lora_dropout", type=float, default=0.05, help="LoRA dropout")
-    
+
+    # W&B arguments
+    parser.add_argument("--use_wandb", action="store_true", help="Enable Weights & Biases logging")
+    parser.add_argument("--wandb_project", type=str, default="ecg-expert-sft", help="W&B project name")
+    parser.add_argument("--wandb_run_name", type=str, default=None, help="W&B run name (defaults to output_dir name)")
+
     args = parser.parse_args()
+
+    # Set default W&B run name if not provided
+    if args.use_wandb and args.wandb_run_name is None:
+        args.wandb_run_name = os.path.basename(args.output_dir.rstrip('/'))
+
     main(args)

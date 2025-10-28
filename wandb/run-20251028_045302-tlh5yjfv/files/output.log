@@ -1,0 +1,4 @@
+Checkpoint tracker file does not exist: /home/xiaoyu/RL/checkpoints/ecg_rl/llama3.2_3b_grpo_lora/latest_checkpointed_iteration.txt
+Training from scratch
+Training Progress:   0%|          | 0/378 [00:00<?, ?it/s]
+Error in reward_fn: Reward function is not implemented for data_source='ecg_expert_qa'

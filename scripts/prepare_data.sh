@@ -1,6 +1,6 @@
 #!/bin/bash
 
-data_dir="data/raw/ECG-Expert-QA/ECG_Knowledge_(Basic_Q&A).json"
+data_dir="data/raw/ECG-Expert-QA/ECG_Knowledge_Basic_Q_A.json"
 
 python prepare_data.py \
     --input "$data_dir" \

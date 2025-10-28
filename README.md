@@ -39,8 +39,34 @@ RL/
 ### Phase 1: Environment Setup
 
 #### Install Dependencies
+Refer to ECG-Bench
+Install the uv package manager via ```bash pip install uv.```
+
+For Torch
 ```bash
-pip install -r requirements.txt
+uv pip uninstall -y vllm torch torchvision torchaudio
+uv pip install "torch>=2.6.0" "torchvision>=0.21.0" \
+  --extra-index-url https://download.pytorch.org/whl/cu124
+```
+
+For base installation 
+```bash 
+uv pip install -e . --no-build-isolation
+```
+
+For installation with flash attention 
+```bash 
+uv pip install -e ".[flash]" --no-build-isolation
+```
+
+For installation with judge 
+```bash 
+uv pip install -e ".[judge]"
+```
+
+For installation of all packages 
+```bash 
+uv pip install -e ".[all]" --no-build-isolation
 ```
 
 #### Add VERL as a git submodule for version control and reproducibility
@@ -101,10 +127,15 @@ bash scripts/sft_train.sh
 ### Phase 4: GRPO Training
 https://github.com/volcengine/verl/blob/main/examples/grpo_trainer/README.md
 
-#### Configure GRPO
+#### reward
+
+Need to design reward function under "verl/verl/utils/reward_score"
 
 #### Run GRPO Training
 
+```bash
+bash scripts/run_grpo.sh
+```
 
 ---
 
@@ -117,3 +148,21 @@ https://github.com/volcengine/verl/blob/main/examples/grpo_trainer/README.md
 #### Compare Models
 
 ---
+
+## Important: vLLM 0.8.4 LoRA Bug Fix
+
+**Issue**: vLLM 0.8.4 has a bug that prevents LoRA training with VERL (`AttributeError: 'LoRALRUCache' object has no attribute '_LRUCache__update'`)
+
+**Fix Applied**: Patched `/home/xiaoyu/anaconda3/envs/rlhf/lib/python3.10/site-packages/vllm/utils.py` lines 277-280
+
+**What was changed**:
+```python
+# Before (buggy):
+def touch(self, key: _K) -> None:
+    self._LRUCache__update(key)  # type: ignore
+
+# After (fixed):
+def touch(self, key: _K) -> None:
+    # Fix for LoRA LRU cache bug - use move_to_end instead
+    if key in self._LRUCache__order:  # type: ignore
+      

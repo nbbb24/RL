@@ -1,6 +1,8 @@
 import json
 import os
 import argparse
+import re
+import pandas as pd
 
 
 class DataPreparation:
@@ -13,12 +15,41 @@ class DataPreparation:
         os.makedirs(self.output_dir, exist_ok=True)
 
     def rename_input_if_needed(self, input_file):
-        """Rename input file if it contains spaces"""
-        if ' ' in input_file:
-            new_file = input_file.replace(' ', '_')
+        """Rename input file if it contains problematic symbols"""
+        # Get directory and filename
+        dir_name = os.path.dirname(input_file)
+        file_name = os.path.basename(input_file)
+
+        # Split filename and extension
+        if '.' in file_name:
+            name_part, ext_part = file_name.rsplit('.', 1)
+            ext_part = '.' + ext_part
+        else:
+            name_part, ext_part = file_name, ''
+
+        # Step 1: Remove leading/trailing special characters (don't convert, just remove)
+        name_part = re.sub(r'^[^\w\-]+|[^\w\-]+$', '', name_part)
+
+        # Step 2: Replace problematic characters in the middle with underscore
+        # Keep only alphanumeric, dash, underscore
+        name_part = re.sub(r'[^\w\-]', '_', name_part)
+
+        # Step 3: Clean up consecutive underscores
+        name_part = re.sub(r'_+', '_', name_part)
+
+        # Step 4: Remove any remaining leading/trailing underscores
+        name_part = name_part.strip('_')
+
+        # Reconstruct filename
+        new_file_name = name_part + ext_part
+
+        # Only rename if needed
+        if new_file_name != file_name:
+            new_file = os.path.join(dir_name, new_file_name) if dir_name else new_file_name
             os.rename(input_file, new_file)
             print(f"Renamed: {input_file} -> {new_file}")
             return new_file
+
         return input_file
 
     def load_system_prompt(self):
@@ -45,28 +76,83 @@ class DataPreparation:
         return data[:split_idx], data[split_idx:]
 
     def save_data(self, train_data, val_data, base_name):
-        # Replace spaces with underscores in output filenames
-        base_name = base_name.replace(' ', '_')
+        # Step 1: Remove leading/trailing special characters
+        base_name = re.sub(r'^[^\w\-]+|[^\w\-]+$', '', base_name)
 
-        # Save SFT data
-        train_file = os.path.join(self.output_dir, f"{base_name}_train.jsonl")
-        val_file = os.path.join(self.output_dir, f"{base_name}_val.jsonl")
-        grpo_file = os.path.join(self.output_dir, f"{base_name}_grpo.jsonl")
+        # Step 2: Replace problematic characters in the middle with underscores
+        base_name = re.sub(r'[^\w\-]', '_', base_name)
 
-        with open(train_file, 'w') as f:
+        # Step 3: Clean up consecutive underscores
+        base_name = re.sub(r'_+', '_', base_name)
+
+        # Step 4: Remove any remaining leading/trailing underscores
+        base_name = base_name.strip('_')
+
+        # Define file paths
+        train_jsonl = os.path.join(self.output_dir, f"{base_name}_train.jsonl")
+        val_jsonl = os.path.join(self.output_dir, f"{base_name}_val.jsonl")
+        grpo_jsonl = os.path.join(self.output_dir, f"{base_name}_grpo.jsonl")
+        grpo_parquet = os.path.join(self.output_dir, f"{base_name}_grpo.parquet")
+        val_parquet = os.path.join(self.output_dir, f"{base_name}_val.parquet")
+
+        # Save SFT data (JSONL format)
+        with open(train_jsonl, 'w') as f:
             for item in train_data:
                 f.write(json.dumps({"question": item["question"], "answer": item["answer"]}) + '\n')
 
-        with open(val_file, 'w') as f:
+        with open(val_jsonl, 'w') as f:
             for item in val_data:
                 f.write(json.dumps({"question": item["question"], "answer": item["answer"]}) + '\n')
 
         # Save GRPO data (questions only, no answers)
-        with open(grpo_file, 'w') as f:
+        # JSONL format
+        with open(grpo_jsonl, 'w') as f:
             for item in train_data:
                 f.write(json.dumps({"question": item["question"]}) + '\n')
 
-        return train_file, val_file, grpo_file
+        # GRPO Parquet format (required by VERL)
+        # VERL expects: data_source, prompt (as list of chat messages), reward_model, extra_info
+        grpo_data_list = []
+        for idx, item in enumerate(train_data):
+            grpo_data_list.append({
+                "data_source": "ecg_expert_qa",
+                "prompt": [
+                    {"role": "user", "content": item["question"]}
+                ],
+                "reward_model": {
+                    "style": "rule",
+                    "ground_truth": item.get("answer", "")
+                },
+                "extra_info": {
+                    "index": idx,
+                    "split": "train"
+                }
+            })
+        grpo_df = pd.DataFrame(grpo_data_list)
+        grpo_df.to_parquet(grpo_parquet, index=False)
+
+        # Validation Parquet format (for GRPO validation)
+        val_data_list = []
+        for idx, item in enumerate(val_data):
+            val_data_list.append({
+                "data_source": "ecg_expert_qa",
+                "prompt": [
+                    {"role": "user", "content": item["question"]}
+                ],
+                "reward_model": {
+                    "style": "rule",
+                    "ground_truth": item.get("answer", "")
+                },
+                "extra_info": {
+                    "index": idx,
+                    "split": "test",
+                    "answer": item.get("answer", "")
+                }
+            })
+        val_df = pd.DataFrame(val_data_list)
+        val_df.to_parquet(val_parquet, index=False)
+
+        return train_jsonl, val_jsonl, grpo_jsonl, grpo_parquet, val_parquet
 
     def prepare(self):
         all_data = self.load_data()
@@ -79,12 +165,17 @@ class DataPreparation:
         # Get base name from input file (without extension)
         base_name = os.path.splitext(os.path.basename(self.input_file))[0]
 
-        train_file, val_file, grpo_file = self.save_data(train_data, val_data, base_name)
+        train_jsonl, val_jsonl, grpo_jsonl, grpo_parquet, val_parquet = self.save_data(train_data, val_data, base_name)
 
         print(f"\nData saved:")
-        print(f"  - {train_file}")
-        print(f"  - {val_file}")
-        print(f"  - {grpo_file}")
+        print(f"  SFT Training:")
+        print(f"    - {train_jsonl}")
+        print(f"    - {val_jsonl}")
+        print(f"  GRPO Training:")
+        print(f"    - {grpo_parquet} (for VERL)")
+        print(f"    - {val_parquet} (validation)")
+        print(f"  Additional:")
+        print(f"    - {grpo_jsonl} (JSONL format)")
 
 
 if __name__ == "__main__":

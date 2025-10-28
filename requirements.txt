@@ -1,7 +1,10 @@
 # Core dependencies
-torch>=2.0.0
+torch==2.6.0
+torchvision==0.21.0
 transformers>=4.35.0
 accelerate>=0.25.0
+vllm==0.8.4  # Note: Requires manual LoRA bug patch (see README)
+openai>=1.52.0  # Required by vLLM for ChatCompletionContentPartInputAudioParam
 
 # VERL framework for GRPO training
 # Requires Python >= 3.9, CUDA >= 12.1
@@ -14,7 +17,7 @@ datasets>=2.14.0
 peft>=0.6.0
 trl>=0.7.0
 # deepspeed>=0.12.0  # Optional - requires CUDA >= 12.1 toolkit
-ray[default]>=2.9.0
+ray[default]>=2.43.0
 
 # Utilities
 numpy>=1.24.0,<2.0.0  # VERL requires numpy<2.0.0
