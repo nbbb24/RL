@@ -1,0 +1,23 @@
+Found checkpoint: %s /home/xiaoyu/RL/checkpoints/ecg_rl/llama3.2_3b_grpo_lora/global_step_320
+Load from checkpoint folder: /home/xiaoyu/RL/checkpoints/ecg_rl/llama3.2_3b_grpo_lora/global_step_320
+Setting global step to 320
+Resuming from /home/xiaoyu/RL/checkpoints/ecg_rl/llama3.2_3b_grpo_lora/global_step_320
+Training Progress: 320it [00:00, ?it/s]
+test_gen_batch meta info: {'eos_token_id': 128009, 'pad_token_id': 128009, 'recompute_log_prob': False, 'do_sample': False, 'validate': True, 'global_steps': 321}
+validation generation end
+[prompt] system
+
+Cutting Knowledge Date: December 2023
+Today Date: 28 Oct 2025
+
+user
+
+What does the "presence of a delta wave" in the ECG suggest about Wolff-Parkinson-White (WPW) syndrome, and which leads are most helpful for identifying this condition?assistant
+
+
+[response] The presence of a delta wave in the ECG suggests Wolff-Parkinson-White (WPW) syndrome.
+
+The leads most helpful for identifying this condition are the inferior and lateral leads.
+[ground_truth] The presence of a delta wave in the ECG suggests Wolff-Parkinson-White (WPW) syndrome, with the most helpful leads being V1-V3. This wave indicates pre-excitation of the ventricles due to an accessory conduction pathway.
+[score] 0.4296037296037296
+local_global_step_folder: checkpoints/ecg_rl/llama3.2_3b_grpo_lora/global_step_321

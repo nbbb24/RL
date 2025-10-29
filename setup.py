@@ -73,6 +73,7 @@ INSTALL_REQUIRES = [
     "openai>=1.70,<2",
     "requests==2.32.4",
     "gradio==5.31.0",
+    "streamlit>=1.28.0",
     "beautifulsoup4==4.12.2",
     "html5lib==1.1",
     "validators==0.18.2",
@@ -112,6 +113,10 @@ EXTRAS_REQUIRE = {
         "flake8>=5.0.0",
         "isort>=5.10.0",
     ],
+    "web": [
+        "streamlit>=1.28.0",
+        "gradio>=4.0.0",
+    ],
     "flash": [
         "flash-attn==2.7.4.post1",
     ],
@@ -125,7 +130,7 @@ EXTRAS_REQUIRE = {
 }
 
 # Keep "all" safe & buildable (omit flash-attn/deepspeed by default)
-EXTRAS_REQUIRE["all"] = sorted(set(EXTRAS_REQUIRE["dev"] + EXTRAS_REQUIRE["judge"]))
+EXTRAS_REQUIRE["all"] = sorted(set(EXTRAS_REQUIRE["dev"] + EXTRAS_REQUIRE["web"] + EXTRAS_REQUIRE["judge"]))
 
 setup(
     name="ecg-rlhf-grpo",
@@ -143,7 +148,7 @@ setup(
     },
 
     packages=find_packages(exclude=["tests", "scripts", "data", "models", "outputs", "verl"]),
-    py_modules=["prepare_data", "sft_train", "chat"],
+    py_modules=["prepare_data", "sft_train", "chat", "streamlit_chat", "analyze_data_samples"],
 
     python_requires=">=3.10",
 
@@ -155,6 +160,8 @@ setup(
             "ecg-prepare-data=prepare_data:main",
             "ecg-sft-train=sft_train:main",
             "ecg-chat=chat:main",
+            "ecg-streamlit-chat=streamlit_chat:main",
+            "ecg-analyze-data=analyze_data_samples:main",
             # Optional: environment self-check command (see tools/env_check.py below)
             "ecg-check-env=tools.env_check:main",
         ],

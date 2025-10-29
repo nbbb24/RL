@@ -13,7 +13,7 @@ export CUDA_VISIBLE_DEVICES=3  # Change this to select different GPU (e.g., 0, 1
 MODEL_PATH="meta-llama/Llama-3.2-3B-Instruct"
 TRAIN_DATA="data/processed/ECG_Knowledge_Basic_Q_A_grpo.parquet"
 VAL_DATA="data/processed/ECG_Knowledge_Basic_Q_A_val.parquet"
-OUTPUT_DIR="models/grpo"
+OUTPUT_DIR="models/grpo/${MODEL_PATH}"
 PROJECT_NAME="ecg_rl"
 EXPERIMENT_NAME="llama3.2_3b_grpo_lora"
 
@@ -28,7 +28,7 @@ PPO_MINI_BATCH_SIZE=16
 PPO_MICRO_BATCH_SIZE=8  # Must divide ppo_mini_batch_size * n_samples
 
 # Training Parameters
-TOTAL_EPOCHS=3
+TOTAL_EPOCHS=1
 SAVE_FREQ=20
 TEST_FREQ=5
 
@@ -83,4 +83,5 @@ python3 -m verl.trainer.main_ppo \
     trainer.nnodes=$N_NODES \
     trainer.save_freq=$SAVE_FREQ \
     trainer.test_freq=$TEST_FREQ \
+    trainer.default_local_dir=$OUTPUT_DIR \
     trainer.total_epochs=$TOTAL_EPOCHS $@

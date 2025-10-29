@@ -153,11 +153,15 @@ class SimpleChatBot:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--models", type=str, nargs='+', default=['base'],
-                        help="Models to load: base, sft, or both (e.g., --models base sft)")
+                        help="Models to load: base, sft, grpo, or any combination (e.g., --models base sft grpo)")
     parser.add_argument("--base_model_path", type=str, default="meta-llama/Llama-3.2-3B-Instruct",
                         help="Base model path")
     parser.add_argument("--sft_adapter_path", type=str, default="models/sft",
                         help="Path to SFT LoRA adapters")
+    parser.add_argument("--grpo_adapter_path", type=str, default=None,
+                        help="Path to GRPO LoRA adapters (e.g., models/grpo/meta-llama/Llama-3.2-3B-Instruct/global_step_126/actor/lora_adapter)")
+    parser.add_argument("--grpo_checkpoint", type=int, default=126,
+                        help="GRPO checkpoint to use (e.g., 20, 40, 60, 80, 100, 120, 126)")
     parser.add_argument("--system_prompt", type=str, default="data/system_prompt.txt",
                         help="Path to system prompt file")
     parser.add_argument("--device", type=str, default=None, help="GPU device (e.g., '0' or '3')")
@@ -168,6 +172,10 @@ def main():
         import os
         os.environ["CUDA_VISIBLE_DEVICES"] = args.device
         print(f"Using GPU: {args.device}\n")
+
+    # Auto-determine GRPO adapter path if not specified
+    if args.grpo_adapter_path is None:
+        args.grpo_adapter_path = f"models/grpo/meta-llama/Llama-3.2-3B-Instruct/global_step_{args.grpo_checkpoint}/actor/lora_adapter"
 
     # Build model configs
     model_configs = []
@@ -182,6 +190,12 @@ def main():
                 'name': 'sft',
                 'model_path': args.base_model_path,
                 'adapter_path': args.sft_adapter_path
+            })
+        elif model_name == 'grpo':
+            model_configs.append({
+                'name': f'grpo_step{args.grpo_checkpoint}',
+                'model_path': args.base_model_path,
+                'adapter_path': args.grpo_adapter_path
             })
         else:
             print(f"Warning: Unknown model '{model_name}', skipping")

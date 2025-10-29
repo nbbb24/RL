@@ -154,6 +154,14 @@ bash scripts/run_grpo.sh
 
 #### Compare Models
 
+```bash
+bash scripts/chat_with_model.sh
+```
+
+
+```bash
+streamlit run streamlit_chat.py
+```
 ---
 
 

@@ -24,3 +24,4 @@ config: {'actor_rollout_ref': {'actor': {'optim': {'_target_': 'verl.workers.con
 2025-10-28 05:28:27,393 INFO    MainThread:3764071 [wandb_run.py:_redirect():2378] Wrapping output streams.
 2025-10-28 05:28:27,393 INFO    MainThread:3764071 [wandb_run.py:_redirect():2403] Redirects installed.
 2025-10-28 05:28:27,395 INFO    MainThread:3764071 [wandb_init.py:init():907] run started, returning control to user process
+2025-10-28 08:38:53,293 WARNING MsgRouterThr:3764071 [router.py:message_loop():77] message_loop has been closed
