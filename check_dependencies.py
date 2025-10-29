@@ -156,7 +156,10 @@ def check_core_packages() -> Dict[str, bool]:
             if expected.startswith('>='):
                 passed = True  # Just check it's installed for >= requirements
             else:
-                passed = version == expected
+                # Strip local version identifier (e.g., +cu124) for comparison
+                # PEP 440: local version identifier comes after '+'
+                version_base = version.split('+')[0]
+                passed = version_base == expected
 
             status = "✓" if passed else "⚠"
             print_check(

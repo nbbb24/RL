@@ -19,18 +19,23 @@ RL/
 ├── models/                      # Model checkpoints
 │   ├── base/                   # Base Llama model
 │   ├── sft/                    # Supervised fine-tuned model
-│   └── rlhf/                   # RLHF checkpoints
+│   └── grpo/                   # GRPO checkpoints
 ├── scripts/
 │   ├── prepare_data.sh         # Prepare data for SFT/RL
-│   ├── sft_train.sh            #SFT (LoRA)
+│   ├── sft_train.sh            # SFT (LoRA)
+│   ├── run_grpo.sh             # GRPO
+│   ├── streamlit_chat.sh       # Run Interface
 │   └── chat_with_model.sh      # Quick script to chat with model
 ├── configs/                     # Training configurations
 ├── utils/                       # Helper functions
 ├── chat.py                      # Interactive chat with models
 ├── requirement.txt              # Python dependencies
-├── README.md                    # This file
+├── README.md                   
+├── check_dependencies.py        # Check dependencies
 ├── prepare_data.py              # Data preprocessing 
-└── sft_train.py                 # SFT training
+├── sft_train.py                 # SFT training
+├── analyze_data_samples.py      # Analyze data
+└── streamlit_chat.py            # Interface
 ```
 
 ## Step-by-Step Implementation Guide
